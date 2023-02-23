@@ -1,0 +1,20 @@
+#%RAML 1.0 Library
+usage:
+
+traits:
+  error-response: !include traits/error-response-trait.raml
+  Authorization: !include traits/headers-authorization-trait.raml
+  common-headers: !include traits/headers-common-headers-trait.raml
+  content-type: !include traits/headers-content-type-trait.raml
+  featureName: !include traits/quaryParam-featurename-trait.raml
+  healthCheck-response: !include traits/healthCheck-responses-trait.raml 
+  clientId-enforcement: !include traits/clientid-enforcement-trait.raml
+types:
+  contactDetails: !include datatypes/contactDetails-dataType.raml
+  policy: !include datatypes/policy-dataType.raml
+  policyRiders: !include datatypes/policyRiders-dataType.raml
+  
+  
+securitySchemes:
+  oAuth2.0: !include security/oAuth-securityScheme.raml
+  

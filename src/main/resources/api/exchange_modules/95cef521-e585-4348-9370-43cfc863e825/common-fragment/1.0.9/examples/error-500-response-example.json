@@ -1,0 +1,10 @@
+{
+  "mesg": "Failed Operation",
+  "code": "500",
+  "eventId": "rfrwtert536tgregerggfd",
+  "error": {
+    "type": "SERVER_ERROR",
+    "title": "Internal Server Error ",
+    "details": "The server encountered an unexpected condition which prevented it from fulfiling the request"
+  }
+}

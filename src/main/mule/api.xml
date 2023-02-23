@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+     <flow name="api-main">
+        <http:listener config-ref="api-httpListener" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="api-config" />
+        <error-handler ref="gloabl-apikit-errorHandler">
+   
+        </error-handler>
+    </flow>
+    <flow name="api-console">
+        <http:listener config-ref="api-httpListener" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="api-config" />
+		<error-handler ref="gloabl-apikit-errorHandler" />
+    </flow>
+    <flow name="get:\customer\contacts:api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  mesg: "Failed Operation",
+  code: "400",
+  eventId: "fggdfhgfh657hrth65",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="gloabl-flow-ErrorHandler" />
+    </flow>
+    <flow name="get:\healthCheck:api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: 200,
+  msg: "Application is up and running"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="gloabl-flow-ErrorHandler" />
+    </flow>
+    <flow name="get:\policies:api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  mesg: "Failed Operation",
+  code: "400",
+  eventId: "fggdfhgfh657hrth65",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="gloabl-flow-ErrorHandler" />
+    </flow>
+    <flow name="get:\riders:api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  mesg: "Failed Operation",
+  code: "400",
+  eventId: "fggdfhgfh657hrth65",
+  error: {
+    "type": "BAD_REQUEST",
+    title: "Invalid Request",
+    details: "The input contains invalid data"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="gloabl-flow-ErrorHandler" />
+    </flow>
+</mule>

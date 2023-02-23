@@ -1,0 +1,31 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  mesg:
+    required: true 
+    type: string
+    example: "Failed Operation"    
+  code:
+    required: true 
+    type: string
+    example: "401"  
+  eventId:
+    required: true 
+    type: string
+    example: "eyrtyi85787ht458y7438yt4y5t8"  
+  error:
+    type: object
+    properties:
+      type:
+        required: true 
+        type: string
+        example: "Un_Authorized"        
+      title:
+        required: true 
+        type: string
+        example: "UnAuthorized" 
+      details:
+        required: true 
+        type: string
+        example: "The Request is not Authorized"       
+ 

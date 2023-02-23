@@ -1,0 +1,19 @@
+#%RAML 1.0 Trait
+headers:
+  Accept-Language: 
+    description: This header will be used to define accept languages for API
+    required: true
+    type: string
+    enum:
+      - en-us
+      - en-ca
+    example: "en-us"
+  x-wu-mesid:
+    description: This header will containunique id for each tracnsaction
+    required: true
+    type: string
+    minLength: 3
+    maxLength: 50
+    example: "2435bnc98-56473ba-en87998ec0982"
+    
+        

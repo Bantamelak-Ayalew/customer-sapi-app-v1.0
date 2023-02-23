@@ -1,0 +1,61 @@
+#%RAML 1.0
+title: customerInfo-sapi-raml
+description: This RAML contain customer info sapi description.
+version: 1.0.0
+baseUri: http://abc.com/{version}
+
+uses:
+  common-library: exchange_modules/95cef521-e585-4348-9370-43cfc863e825/common-fragment/1.0.9/common-fragment.raml
+
+
+/policies:
+  get:
+    is:
+      - common-library.common-headers
+      - common-library.featureName
+      - common-library.error-response
+      - common-library.clientId-enforcement
+    responses:
+      200:
+        body:
+          application/json:
+            type: common-library.policy
+/riders:
+  get:
+    is:
+      - common-library.common-headers
+      - common-library.featureName
+      - common-library.error-response
+      - common-library.clientId-enforcement
+    responses:
+      200:
+        body:
+          application/json:
+            type: common-library.policyRiders
+/customer:
+  /contacts:
+    get:
+      is:
+        - common-library.common-headers
+        - common-library.featureName
+        - common-library.error-response
+        - common-library.clientId-enforcement
+      responses:
+        200:
+          body:
+            application/json:
+              type: common-library.contactDetails   
+
+            
+/healthCheck:
+  description: This api will be used to check health of mule application
+  get:
+    is:
+      -  common-library.healthCheck-response
+      -  common-library.common-headers
+      -  common-library.error-response
+      -  common-library.clientId-enforcement
+
+  
+
+

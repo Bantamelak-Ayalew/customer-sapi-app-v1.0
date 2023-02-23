@@ -1,0 +1,10 @@
+{
+  "mesg": "Failed Operation",
+  "code": "401",
+  "eventId": "eyrtyi85787ht458y7438yt4y5t8",
+  "error": {
+    "type": "Un_Authorized",
+    "title": "UnAuthorized",
+    "details": "The Request is not Authorized"
+  }
+}
