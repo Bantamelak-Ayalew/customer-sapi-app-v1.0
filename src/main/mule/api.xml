@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
      <flow name="api-main">
-        <http:listener config-ref="api-httpListener" path="/api/*">
+        <http:listener path="/api/*" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -10,13 +10,13 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="api-config" />
-        <error-handler ref="gloabl-apikit-errorHandler">
+        <apikit:router doc:name="APIkit Router" doc:id="356fc68b-256a-4948-9cb9-c86e2de2b4bb" config-ref="api-config"/>
+		<error-handler ref="gloabl-apikit-errorHandler">
    
         </error-handler>
     </flow>
     <flow name="api-console">
-        <http:listener config-ref="api-httpListener" path="/console/*">
+        <http:listener path="/console/*" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -29,27 +29,15 @@
 		<error-handler ref="gloabl-apikit-errorHandler" />
     </flow>
     <flow name="get:\customer\contacts:api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  mesg: "Failed Operation",
-  code: "400",
-  eventId: "fggdfhgfh657hrth65",
-  error: {
-    "type": "BAD_REQUEST",
-    title: "Invalid Request",
-    details: "The input contains invalid data"
-  }
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Initialize Request Data Flow Reference" doc:id="fd8fb99e-22b1-4f1c-9af4-7cc11c2decf8" name="initialize-request-data-sub_Flow"/>
+		<logger level="INFO" doc:name="Request Logger" doc:id="807d5d79-4dd6-46b6-9728-5e1bf428948c" message='#[%dw 2.0 &#10;output application/json indent = false &#10;--- &#10;{ 	&#10;    TimeStamp: vars.requestTime, &#10;    transactionId: vars.headers.requestTransactionId,&#10;    AppName: app.name, 	&#10;    FlowName: flow.name, 	&#10;    BusinessProcessName:  "Customer Contact info", 	&#10;    Category:  "Customer", 	&#10;    OriginatingApplication:  "Process API", 	&#10;    DesinationApplication:  "Salesforce", 	&#10;    CustomerId: "NA", 	&#10;    txnState:  "START" &#10;}]'/>
+		<flow-ref doc:name="customerContact-implmentation Flow Reference" doc:id="12dd3dc7-9ff7-4d58-b436-efbccf3b8a66" name="get-customerContact-implmentation" />
+		<logger level="INFO" doc:name="Response Logger" doc:id="ffbf181f-141a-46a8-b373-6bf6cb909b59" message='#[%dw 2.0 &#10;output application/json indent = false &#10;--- &#10;{ 	&#10;    TimeStamp: vars.requestTime, &#10;    transactionId: vars.headers.requestTransactionId,&#10;    AppName: app.name, 	&#10;    FlowName: flow.name, 	&#10;    BusinessProcessName:  "Customer Contact info", 	&#10;    Category:  "Customer", 	&#10;    OriginatingApplication:  "Process API", 	&#10;    DesinationApplication:  "Salesforce", 	&#10;    CustomerId: "NA", 	&#10;    txnState:  "END" &#10;}]'/>
 		<error-handler ref="gloabl-flow-ErrorHandler" />
     </flow>
     <flow name="get:\healthCheck:api-config">
-        <ee:transform>
+        <logger level="INFO" doc:name="Request Logger" doc:id="928bbf7e-aea5-4b79-a5b5-f61b23f9c5d8" message="Request received for HealthCheck API"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -60,10 +48,13 @@ output application/json
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<logger level="INFO" doc:name="Response Logger" doc:id="252e676a-3046-4f66-a68a-fec21ff7753c" message="Response sent  for HealthCheck API"/>
 		<error-handler ref="gloabl-flow-ErrorHandler" />
     </flow>
     <flow name="get:\policies:api-config">
-        <ee:transform>
+        <logger level="INFO" doc:name="START LOG" doc:id="83109dc4-eeb6-4dbf-aa89-85cbb60e46df" />
+		<logger level="INFO" doc:name="Logger" doc:id="38042153-2dbf-4c19-9587-118688f744ab" />
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -83,7 +74,9 @@ output application/json
 		<error-handler ref="gloabl-flow-ErrorHandler" />
     </flow>
     <flow name="get:\riders:api-config">
-        <ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="d716e04b-bef8-4eee-98dc-687f1a713990" />
+		<logger level="INFO" doc:name="Logger" doc:id="53dc908f-d272-4c13-be03-ad6c59a655ac" />
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json

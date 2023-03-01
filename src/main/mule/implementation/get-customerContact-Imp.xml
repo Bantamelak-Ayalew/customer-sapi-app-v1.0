@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+		<sub-flow name="get-customerContact-implmentation" doc:id="30baaa62-ef98-4f9e-b9af-75a4cde721da" >
+		<ee:transform doc:name="Transform Message" doc:id="d215a715-66a1-4933-a030-34a22653de8d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+var policyNumber = vars.requestData.queryParams.policyNumber
+var flagPolicyNumber = policyNumber != null and policyNumber != ""
+
+---
+
+if (flagPolicyNumber) (
+    if (sizeOf("SELECT name, policyNumber__c, addressUpdateStatus__c, address_zh__c, addrLine1__c, addrLine2__c, addrLine3__c, addrLine4__c, emailAddress__c, emailUpdateStatus__c, mobileNumberUpdateStatus__c, mobileNumber__c FROM customerContact__c WHERE policyNumber__c = '$(policyNumber)'") > 0) (
+        "SELECT name, policyNumber__c, addressUpdateStatus__c, address_zh__c, addrLine1__c, addrLine2__c, addrLine3__c, addrLine4__c, emailAddress__c, emailUpdateStatus__c, mobileNumberUpdateStatus__c, mobileNumber__c FROM customerContact__c WHERE policyNumber__c = '$(policyNumber)'"
+    ) else ("Wrong policy number, please provide the correct policy number")
+) else ("Please enter your policy number")
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Request SFDC Logger" doc:id="b0372882-3496-4b34-965a-93f1589c5dcd" message='#[%dw 2.0 &#10;output application/json indent = false &#10;--- &#10;{ 	&#10;    TimeStamp: vars.requestTime, &#10;    transactionId: vars.headers.requestTransactionId,&#10;    AppName: app.name, 	&#10;    FlowName: flow.name, 	&#10;    BusinessProcessName:  "Customer Contact info", 	&#10;    Category:  "Customer", 	&#10;    OriginatingApplication:  "Process API", 	&#10;    DesinationApplication:  "Salesforce", 	&#10;    CustomerId: "NA", 	&#10;    txnState:  "REQUEST SFDC" &#10;}]'/>
+		<salesforce:query doc:name="Query" doc:id="3a846015-3f8f-4e36-985c-06f25cb1e0c5" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[#[payload]]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<logger level="INFO" doc:name="Response SFDC Logger" doc:id="22a3cf26-8a0c-4276-9445-b990aa4cfacb" message='#[%dw 2.0 &#10;output application/json indent = false &#10;--- &#10;{ 	&#10;    TimeStamp: vars.requestTime, &#10;    transactionId: vars.headers.requestTransactionId,&#10;    AppName: app.name, 	&#10;    FlowName: flow.name, 	&#10;    BusinessProcessName:  "Customer Contact info", 	&#10;    Category:  "Customer", 	&#10;    OriginatingApplication:  "Process API", 	&#10;    DesinationApplication:  "Salesforce", 	&#10;    CustomerId: "NA", 	&#10;    txnState:  "RESPONSE SFDC" &#10;}]'/>
+		<ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	 "PolicyNumber": item.policyNumber__c,
+    "emailAddress": item.emailAddress__c,
+    "emailUpdateStatus": item.emailUpdateStatus__c,
+    "mobileNumber": item.mobileNumber__c,
+    "mobileNumberUpdateStatus": item.mobileNumberUpdateStatus__c,
+    "address": {
+        "addrLine1": item.addrLine1__c,
+        "addrLine2": item.addrLine2__c,
+        "addrLine3": item.addrLine3__c,
+        "addrLine4": item.addrLine4__c
+    },
+    "address_zh": item.address_zh__c,
+    "addressUpdateStatus": item.addressUpdateStatus__c
+   
+})
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+	</sub-flow>
+</mule>

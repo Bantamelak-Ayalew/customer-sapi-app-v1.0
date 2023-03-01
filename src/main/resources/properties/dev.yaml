@@ -1,6 +1,9 @@
-http:
-  listener:
-    host: "0.0.0.0"
+http:   
+    host: "localhost"
     port: "8081"
     readTimeOut: "3000" 
-      
+
+sfdc:  
+    username: "test@bankinguj.com"
+    password: "![o5C/tst9XW/qYIj5UHJGDw==]"
+    securityToken: "![/alsYIFPnnpqI1C/rlRumhnoXh2eAELJBvDJMJbj8+g=]"  

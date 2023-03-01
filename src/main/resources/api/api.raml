@@ -37,15 +37,15 @@ uses:
     get:
       is:
         - common-library.common-headers
-        - common-library.featureName
         - common-library.error-response
         - common-library.clientId-enforcement
-      responses:
-        200:
-          body:
-            application/json:
-              type: common-library.contactDetails   
-
+      queryParameters:
+        policyNumber:
+          description: This query param will be used to retrive customer contact policyNumber
+          required: false
+          type: string
+          example:
+            "policy1001" 
             
 /healthCheck:
   description: This api will be used to check health of mule application
